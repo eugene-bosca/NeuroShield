@@ -1,15 +1,26 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
+# Gradle
+.gradle/
+frontend/app/build
+
+# Android Studio generated files
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+.apk
+output.json
+
+# IntelliJ
+/frontend/.idea
+*.iml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Mac
+.DS_Store
+
+# Kotlin
+.kotlin
+
+.idea
