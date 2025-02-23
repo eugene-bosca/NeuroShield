@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun HistoryPageScreen(onClickHomePage: () -> Unit) {
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column (
             modifier = Modifier.padding(innerPadding)
