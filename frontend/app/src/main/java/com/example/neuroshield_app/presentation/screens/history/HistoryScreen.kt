@@ -1,9 +1,11 @@
 package com.example.neuroshield_app.presentation.screens.history
 
 import android.graphics.pdf.PdfDocument.Page
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -48,6 +50,7 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
                     IconButton(onClick = onClickHomePage ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = Color(0xFF84BBD3),
                             contentDescription = "Localized description"
                         )
                     }
@@ -56,6 +59,7 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
                     IconButton(onClick = { /* do something */ }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
+                            tint = Color(0xFF84BBD3),
                             contentDescription = "Localized description"
                         )
                     }
@@ -99,14 +103,19 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
             // List of results
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
                 items(filteredPeople) { person ->
                     val statusColor = if (person.isAttentionRecommended) Color.Red else Color(0xFF4CAF50)
                     ListItem(
                         headlineContent = { Text(person.name) },
-                        supportingContent = { Text(person.status,
+                        supportingContent = { Text(
+                            text = person.status,
                             color = statusColor,
-                            style = MaterialTheme.typography.bodyMedium)
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.border(width = 1.dp, color = statusColor, shape = RoundedCornerShape(20.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
                         },
                         leadingContent = {
                             Icon(
@@ -115,24 +124,14 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
                                 modifier = Modifier.size(40.dp)
                             )
                         },
-//                        trailingContent = {
-//                            Row(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(16.dp),
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ){
-//                                // “edit” button
-//                                TextButton(onClick = { /* Handle edit */ }) {
-//                                    Text(text = "edit")
-//                                }
-//
-//                                // “more” button (you can also use an IconButton if you want an icon)
-//                                TextButton(onClick = { /* Handle more */ }) {
-//                                    Text(text = "more")
-//                                }
-//                            }
-//                        }
+                        trailingContent = {
+                            TextButton(onClick = { /* Handle edit */ }) {
+                                Text(text = "Edit",
+                                    color = Color(0xFF84BBD3)
+                                )
+                            }
+
+                        }
                     )
                     Divider()
                 }
