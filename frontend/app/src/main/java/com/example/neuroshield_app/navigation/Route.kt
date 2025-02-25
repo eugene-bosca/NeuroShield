@@ -7,3 +7,6 @@ object HomePage
 
 @Serializable
 object HistoryPage
+
+@Serializable
+object UserInfoPage

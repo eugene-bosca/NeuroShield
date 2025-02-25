@@ -6,16 +6,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.neuroshield_app.presentation.screens.history.HistoryPageScreen
 import com.example.neuroshield_app.presentation.screens.home.HomePageScreen
+import com.example.neuroshield_app.presentation.screens.userInfo.UserInfoScreen
 
 
 @Composable
 fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomePage) {
         composable<HomePage> { HomePageScreen(
-            onClickHistory = {navController.navigate(route = HistoryPage)}
+            onClickHistory = {navController.navigate(route = HistoryPage)},
+            onClickUserInfo = {navController.navigate(route = UserInfoPage)}
         ) }
         composable<HistoryPage> { HistoryPageScreen(
             onClickHomePage = {navController.navigate(route = HomePage)},
+        ) }
+        composable<UserInfoPage> { UserInfoScreen(
+            onClickHomePage = {navController.navigate(route = HomePage)}
         ) }
     }
 }
