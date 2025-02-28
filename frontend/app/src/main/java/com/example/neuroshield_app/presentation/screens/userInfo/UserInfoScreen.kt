@@ -33,8 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -58,7 +56,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserInfoScreen(onClickHomePage: () -> Unit) {
+fun UserInfoScreen(onClickHomePage: () -> Unit, onClickEyeAlignment: () -> Unit) {
     val firstNameState = remember { mutableStateOf("") }
     val lastNameState = remember { mutableStateOf("") }
     val teamNameState = remember { mutableStateOf("") }
@@ -153,7 +151,7 @@ fun UserInfoScreen(onClickHomePage: () -> Unit) {
                 TimePickerDocked(modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(20.dp))
-            ElevatedButton(onClick = onClickHomePage,
+            ElevatedButton(onClick = onClickEyeAlignment,
                 modifier = Modifier.fillMaxWidth(0.90f)
                     .padding(bottom = 20.dp)
                     .height(60.dp),
@@ -267,8 +265,8 @@ fun TimePickerDocked(modifier: Modifier = Modifier) {
             trailingIcon = {
                 IconButton(onClick = { showTimePicker = !showTimePicker }) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select date"
+                        painter = painterResource(id = R.drawable.time_icon),
+                        contentDescription = "Select time"
                     )
                 }
             },

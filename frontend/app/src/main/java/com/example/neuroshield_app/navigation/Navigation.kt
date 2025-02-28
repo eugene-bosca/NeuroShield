@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.neuroshield_app.presentation.screens.history.HistoryPageScreen
 import com.example.neuroshield_app.presentation.screens.home.HomePageScreen
 import com.example.neuroshield_app.presentation.screens.userInfo.UserInfoScreen
+import com.example.neuroshield_app.presentation.screens.eyeAlignment.EyeAlignmentScreen
 
 
 @Composable
@@ -20,7 +21,11 @@ fun Navigation(navController: NavHostController) {
             onClickHomePage = {navController.navigate(route = HomePage)},
         ) }
         composable<UserInfoPage> { UserInfoScreen(
-            onClickHomePage = {navController.navigate(route = HomePage)}
+            onClickHomePage = {navController.navigate(route = HomePage)},
+            onClickEyeAlignment = {navController.navigate(route = EyeAlignmentPage)}
         ) }
+        composable<EyeAlignmentPage> { EyeAlignmentScreen(
+            onClickUserInfoPage = {navController.navigate(route = UserInfoPage)}
+        )}
     }
 }

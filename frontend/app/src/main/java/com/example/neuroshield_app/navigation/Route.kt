@@ -10,3 +10,6 @@ object HistoryPage
 
 @Serializable
 object UserInfoPage
+
+@Serializable
+object EyeAlignmentPage
