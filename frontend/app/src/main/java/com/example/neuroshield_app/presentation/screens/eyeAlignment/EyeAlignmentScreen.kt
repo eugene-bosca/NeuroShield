@@ -1,9 +1,15 @@
 package com.example.neuroshield_app.presentation.screens.eyeAlignment
 
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,11 +30,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.neuroshield_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,12 +79,12 @@ fun EyeAlignmentScreen( onClickUserInfoPage: () -> Unit) {
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.eyes),
-                contentDescription = "eyes",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(500.dp)
-            )
+
+            Spacer(modifier = Modifier.padding(80.dp))
+
+            CameraAlignmentStream()
+
+            Spacer(modifier = Modifier.height(100.dp))
 
             ElevatedButton(
                 onClick = onClickUserInfoPage,
@@ -120,3 +128,45 @@ fun EyeAlignmentScreen( onClickUserInfoPage: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun CameraAlignmentStream() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Left Eye",
+                color = Color.Gray,
+                fontSize = 16.sp
+            )
+            Text(
+                text = "Right Eye",
+                color = Color.Gray,
+                fontSize = 16.sp
+            )
+        }
+
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(300.dp),
+            factory = { context ->
+                WebView(context).apply {
+                    settings.javaScriptEnabled = true
+                    settings.loadWithOverviewMode = true
+                    settings.useWideViewPort = true
+                    webChromeClient = WebChromeClient()
+                    webViewClient = WebViewClient()
+                    loadUrl("http://192.168.0.105:5000/camera_alignment")
+                }
+            }
+        )
+    }
+}
+
