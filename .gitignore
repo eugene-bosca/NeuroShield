@@ -25,7 +25,7 @@ render.experimental.xml
 
 .idea
 
-backend/neuroshield/api/__pycache__/
-backend/neuroshield/api/migrations/__pycache__/
-backend/neuroshield/neuroshield/__pycache__/
-backend/neuroshield_env/
+backend/api/__pycache__/
+backend/api/migrations/__pycache__/
+backend/neuroshield/__pycache__/
+neuroshield_env/
