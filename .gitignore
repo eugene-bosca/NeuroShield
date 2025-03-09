@@ -28,4 +28,6 @@ render.experimental.xml
 backend/api/__pycache__/
 backend/api/migrations/__pycache__/
 backend/neuroshield/__pycache__/
+backend/.env
 neuroshield_env/
+backend/google-credentials.json

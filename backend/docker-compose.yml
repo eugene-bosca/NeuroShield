@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  cloud-sql-neuroshield:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    container_name: cloud-sql-neuroshield
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: django_container_neuroshield
+    restart: always
+    depends_on:
+      - cloud-sql-neuroshield
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app

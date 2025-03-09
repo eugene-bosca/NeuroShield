@@ -1,0 +1,24 @@
+# Use a minimal base image
+FROM alpine:latest
+
+# Set the working directory
+WORKDIR /app
+
+# Install curl for downloading Cloud SQL Proxy
+RUN apk add --no-cache curl
+
+# Download the Cloud SQL Proxy binary
+RUN curl -Lo /app/cloud_sql_neuroshield https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.11.2/cloud-sql-proxy.linux.amd64
+
+# Copy Google Cloud credentials and environment variables
+COPY google-credentials.json /app/
+COPY .env /app/
+
+# Make the proxy executable
+RUN chmod +x /app/cloud_sql_neuroshield
+
+# Expose MySQL port
+EXPOSE 3306
+
+# Run the Cloud SQL Proxy with correct binary name
+CMD ["sh", "-c", "/app/cloud_sql_neuroshield --address=0.0.0.0 --credentials-file=/app/google-credentials.json $DB_CONNECTION_NAME"]
