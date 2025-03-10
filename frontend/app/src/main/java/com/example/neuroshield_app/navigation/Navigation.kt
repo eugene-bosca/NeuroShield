@@ -8,6 +8,7 @@ import com.example.neuroshield_app.presentation.screens.history.HistoryPageScree
 import com.example.neuroshield_app.presentation.screens.home.HomePageScreen
 import com.example.neuroshield_app.presentation.screens.userInfo.UserInfoScreen
 import com.example.neuroshield_app.presentation.screens.eyeAlignment.EyeAlignmentScreen
+import com.example.neuroshield_app.presentation.screens.results.ResultsScreen
 
 
 @Composable
@@ -25,7 +26,11 @@ fun Navigation(navController: NavHostController) {
             onClickEyeAlignment = {navController.navigate(route = EyeAlignmentPage)}
         ) }
         composable<EyeAlignmentPage> { EyeAlignmentScreen(
+            onClickResultsPage = {navController.navigate(route = ResultsPage)},
             onClickUserInfoPage = {navController.navigate(route = UserInfoPage)}
+        )}
+        composable<ResultsPage> { ResultsScreen (
+            onClickHomePage = {navController.navigate(route = HomePage)}
         )}
     }
 }

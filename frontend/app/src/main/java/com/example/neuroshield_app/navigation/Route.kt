@@ -13,3 +13,6 @@ object UserInfoPage
 
 @Serializable
 object EyeAlignmentPage
+
+@Serializable
+object ResultsPage
