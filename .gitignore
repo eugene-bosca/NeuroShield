@@ -31,3 +31,5 @@ backend/neuroshield/__pycache__/
 backend/.env
 neuroshield_env/
 backend/google-credentials.json
+backend/static/
+backend/app.yaml
