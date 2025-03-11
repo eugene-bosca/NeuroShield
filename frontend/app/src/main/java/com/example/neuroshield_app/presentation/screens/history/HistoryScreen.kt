@@ -15,54 +15,49 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
-data class PersonStatus(
-    val name: String,
-    val status: String,
-    val isAttentionRecommended: Boolean
-)
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryPageScreen(onClickHomePage: () -> Unit) {
-    // Example data
-    val people = listOf(
-        PersonStatus("Andrew Smith", "Medical Attention Recommended", true),
-        PersonStatus("Noah Baker", "Cleared", false),
-        PersonStatus("Jordan Brown", "Cleared", false),
-        PersonStatus("Emma Peel", "Medical Attention Recommended", true),
-        PersonStatus("Becky Peel", "Medical Attention Recommended", true)
-    )
+fun HistoryPageScreen(
+    onClickHomePage: () -> Unit,
+    historyViewModel: HistoryViewModel = hiltViewModel()
+) {
+    val users by historyViewModel.events.collectAsState()
+    val isLoading by historyViewModel.isLoading.collectAsState()
+    val errorMessage by historyViewModel.errorMessage.collectAsState()
 
-    // Search query state
     var searchQuery by remember { mutableStateOf("") }
     var searchActive by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        historyViewModel.fetchUsers()
+    }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Results") },
                 navigationIcon = {
-                    IconButton(onClick = onClickHomePage ) {
+                    IconButton(onClick = onClickHomePage) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFF84BBD3),
-                            contentDescription = "Localized description"
+                            contentDescription = "Back"
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = { /* Open menu */ }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
                             tint = Color(0xFF84BBD3),
-                            contentDescription = "Localized description"
+                            contentDescription = "Menu"
                         )
                     }
                 },
             )
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -72,10 +67,7 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
             SearchBar(
                 query = searchQuery,
                 onQueryChange = { searchQuery = it },
-                onSearch = {
-                    // Handle the search action here (e.g., perform filtering)
-                    searchActive = false
-                },
+                onSearch = { searchActive = false },
                 active = searchActive,
                 onActiveChange = { searchActive = it },
                 leadingIcon = {
@@ -91,27 +83,53 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
                 colors = SearchBarDefaults.colors(containerColor = Color(0xFFE6F7FF))
             ) {}
 
-            // Filter the list by search query if needed
-            val filteredPeople = people.filter {
-                it.name.contains(searchQuery, ignoreCase = true)
-            }
-
-            // List of results
+            // **Handle Loading State**
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (errorMessage != null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Text(
+                        text = "Error: $errorMessage",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
                     .padding(horizontal = 20.dp)
             ) {
-                items(filteredPeople) { person ->
-                    val statusColor = if (person.isAttentionRecommended) Color.Red else Color(0xFF4CAF50)
+                items(users) { user ->
+                    val isAttentionRecommended = user.team_name.contains("Warriors", ignoreCase = true) // Example condition
+                    val statusColor = if (isAttentionRecommended) Color.Red else Color(0xFF4CAF50)
+
                     ListItem(
-                        headlineContent = { Text(person.name) },
-                        supportingContent = { Text(
-                            text = person.status,
-                            color = statusColor,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.border(width = 1.dp, color = statusColor, shape = RoundedCornerShape(20.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
-                        )
+                        headlineContent = { Text("${user.first_name} ${user.last_name}") },
+                        supportingContent = {
+                            Text(
+                                text = "Team: ${user.team_name}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "Coach: ${user.coach_name}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "Date of Hit: ${user.date_of_hit}",
+                                color = statusColor,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .border(width = 1.dp, color = statusColor, shape = RoundedCornerShape(20.dp))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
                         },
                         leadingContent = {
                             Icon(
@@ -122,15 +140,16 @@ fun HistoryPageScreen(onClickHomePage: () -> Unit) {
                         },
                         trailingContent = {
                             TextButton(onClick = { /* Handle edit */ }) {
-                                Text(text = "Edit",
+                                Text(
+                                    text = "Edit",
                                     color = Color(0xFF84BBD3)
                                 )
                             }
-
                         }
                     )
-                    Divider()
+                    HorizontalDivider()
                 }
+            }
             }
         }
     }
