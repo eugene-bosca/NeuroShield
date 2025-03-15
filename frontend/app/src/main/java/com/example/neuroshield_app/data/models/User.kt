@@ -19,3 +19,14 @@ data class User (
     val time_of_hit: String = "",
     val created_at: String = ""
 )
+
+@Serializable
+data class CreateUser (
+    val first_name: String = "",
+    val last_name: String = "",
+    val team_name: String = "",
+    val coach_name: String = "",
+    val date_of_hit: String = "",
+    val time_of_hit: String = "",
+    val created_at: String = ""
+)
