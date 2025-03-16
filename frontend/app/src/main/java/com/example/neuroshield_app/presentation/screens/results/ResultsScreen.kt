@@ -26,6 +26,8 @@ import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,17 +40,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.neuroshield_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultsScreen( onClickHomePage: () -> Unit) {
+fun ResultsScreen(
+    patientId: String,
+    onClickHomePage: () -> Unit,
+    resultsViewModel: ResultsViewModel = hiltViewModel()
+) {
+
+    val users by resultsViewModel.user.collectAsState()
+    val isLoading by resultsViewModel.isLoading.collectAsState()
+    val errorMessage by resultsViewModel.errorMessage.collectAsState()
+
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabTitles = listOf("Smooth Pursuit", "Pupil Light Reflex")
+
+    LaunchedEffect(true) {
+        resultsViewModel.fetchUser(patientId)
+    }
+
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text("Results") },
+                title = { Text("Results for $patientId") },
                 navigationIcon = {
                     IconButton(onClick = onClickHomePage) {
                         Icon(

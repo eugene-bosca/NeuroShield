@@ -21,6 +21,7 @@ fun Navigation(navController: NavHostController) {
         ) }
         composable<HistoryPage> { HistoryPageScreen(
             onClickHomePage = {navController.navigate(route = HomePage)},
+            onClickResultsPage = { patientId -> navController.navigate("results/$patientId")}
         ) }
         composable<UserInfoPage> { UserInfoScreen(
             onClickHomePage = {navController.navigate(route = HomePage)},
@@ -34,8 +35,12 @@ fun Navigation(navController: NavHostController) {
             onClickResultsPage = {navController.navigate(route = ResultsPage)},
             onClickEyeAlignment = {navController.navigate(route = EyeAlignmentPage)}
         )}
-        composable<ResultsPage> { ResultsScreen (
-            onClickHomePage = {navController.navigate(route = HomePage)}
-        )}
+        composable("results/{patientId}") { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
+            ResultsScreen(
+                patientId = patientId,
+                onClickHomePage = { navController.navigate(HomePage) }
+            )
+        }
     }
 }

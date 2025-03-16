@@ -23,6 +23,12 @@ class UserDataSource @Inject constructor(
         return userResponse
     }
 
+    suspend fun getUser(patientId: String): User {
+        Log.d(TAG, "getUser for $patientId")
+        val userResponse = userApi.getUser(patientId)
+        return userResponse
+    }
+
     suspend fun createUsers(user: CreateUser): String {
 
         Log.d(TAG, "create User for $user")

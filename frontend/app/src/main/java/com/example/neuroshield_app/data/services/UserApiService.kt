@@ -72,4 +72,28 @@ class UserApiService @Inject constructor() {
             return@withContext result
         }
     }
+
+    suspend fun getUser(patientId: String): User = withContext(Dispatchers.IO) {
+        val endpoint = "users/$patientId/"
+        val url = Api.url(endpoint)
+
+        Log.d(TAG, "GET: $url")
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            Api.handleResponseStatus(response)
+
+            val body = response.body?.string()
+                ?: throw HttpException(response.code, "Empty response body")
+
+            val resultType = object : TypeToken<User>() {}.type
+            val result: User = gson.fromJson(body, resultType)
+
+            return@withContext result
+        }
+    }
 }
