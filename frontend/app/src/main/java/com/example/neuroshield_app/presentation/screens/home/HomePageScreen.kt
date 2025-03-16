@@ -28,7 +28,7 @@ import com.example.neuroshield_app.R
 
 
 @Composable
-fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit) {
+fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit, onClickRunTests: () -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Image(
             painter = painterResource(id = R.drawable.neuroshield_wide),

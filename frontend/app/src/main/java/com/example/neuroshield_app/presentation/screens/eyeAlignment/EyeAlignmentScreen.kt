@@ -41,7 +41,7 @@ import com.example.neuroshield_app.R
 @Composable
 fun EyeAlignmentScreen(
     onClickUserInfoPage: () -> Unit,
-    onClickResultsPage: () -> Unit
+    onClickRunTestsPage: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -88,7 +88,7 @@ fun EyeAlignmentScreen(
             Spacer(modifier = Modifier.height(100.dp))
 
             ElevatedButton(
-                onClick = onClickResultsPage,
+                onClick = onClickRunTestsPage,
                 modifier = Modifier.fillMaxWidth(0.90f)
                     .padding(bottom = 20.dp)
                     .height(60.dp),

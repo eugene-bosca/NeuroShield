@@ -16,3 +16,6 @@ object EyeAlignmentPage
 
 @Serializable
 object ResultsPage
+
+@Serializable
+object RunTestsPage
