@@ -3,7 +3,7 @@ from django.utils.timezone import now
 import uuid
 
 class User(models.Model):
-    patient_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    patient_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     team_name = models.CharField(max_length=100)
@@ -11,9 +11,9 @@ class User(models.Model):
     date_of_hit = models.DateField()
     time_of_hit = models.TimeField()
     created_at = models.DateTimeField(default=now)
-
+    
     def __str__(self):
-        return self.patient_id
+        return str(self.patient_id)
 
 class Plr(models.Model):
     patient_id = models.ForeignKey(User, on_delete=models.CASCADE)
