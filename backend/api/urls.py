@@ -16,13 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import views
 from rest_framework.routers import DefaultRouter
+from rest_framework_nested.routers import NestedDefaultRouter
+from . import views
 
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
 
+# Create a nested router for users
+# The lookup field is 'user', which will create a URL kwarg 'user_pk'
+users_router = NestedDefaultRouter(router, r'users', lookup='user')
+users_router.register(r'plrs', views.PlrViewSet, basename='user-plrs')
+users_router.register(r'smoothpursuits', views.SmoothPursuitViewSet, basename='user-smoothpursuits')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('', include(users_router.urls)),
 ]

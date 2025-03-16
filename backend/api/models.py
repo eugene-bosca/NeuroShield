@@ -16,7 +16,7 @@ class User(models.Model):
         return str(self.patient_id)
 
 class Plr(models.Model):
-    patient_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    patient_id = models.OneToOneField(User, on_delete=models.CASCADE)
     max_pupil_diam = models.FloatField()
     min_pupil_diam = models.FloatField()
     percent_contstriction = models.FloatField()
@@ -28,7 +28,7 @@ class Plr(models.Model):
     tested_at = models.DateTimeField(default=now)
 
 class SmoothPursuit(models.Model):
-    patient_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    patient_id = models.OneToOneField(User, on_delete=models.CASCADE)
     phase_lag = models.FloatField()
     mean_squared_error = models.FloatField()
     pearson_coefficient = models.FloatField()
