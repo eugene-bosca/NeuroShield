@@ -133,7 +133,8 @@ class UserInfoViewModel @Inject constructor(
         }
 
         if (!isValid) {
-            return // Stop if validation fails
+            _isLoading.value = false
+            return
         }
 
         viewModelScope.launch {
