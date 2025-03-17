@@ -276,6 +276,10 @@ fun ResultsScreen(
                                         value = user?.last_name ?: "N/A"
                                     )
                                     PatientInfoRow(
+                                        label = "Patient ID",
+                                        value = user?.patient_id ?: "N/A"
+                                    )
+                                    PatientInfoRow(
                                         label = "Team Name",
                                         value = user?.team_name ?: "N/A"
                                     )
@@ -292,7 +296,7 @@ fun ResultsScreen(
                                         value = user?.time_of_hit ?: "N/A"
                                     )
                                     PatientInfoRow(
-                                        label = "Created At",
+                                        label = "Record Creation",
                                         value = user?.created_at ?: "N/A"
                                     )
                                 }
