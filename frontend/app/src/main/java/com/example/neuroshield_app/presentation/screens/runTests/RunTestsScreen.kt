@@ -1,6 +1,5 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -31,29 +30,21 @@ import androidx.compose.material.icons.filled.Menu
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RunTestsScreen(
-    onClickEyeAlignment: () -> Unit,
-    onClickResultsPage: () -> Unit
+    patientId: String,
+    onClickEyeAlignment: (patientId: String) -> Unit,
+    onClickResultsPage: (patientId: String) -> Unit
 ) {
     Scaffold(
         topBar = {
             LargeTopAppBar(
                 title = { Text("Run Tests", fontSize = 28.sp) },
                 navigationIcon = {
-                    IconButton(onClick = onClickEyeAlignment) {
+                    IconButton(onClick = { onClickEyeAlignment(patientId) })
+                    {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFF84BBD3),
                             contentDescription = "Back",
-                            modifier = Modifier.width(32.dp)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            tint = Color(0xFF84BBD3),
-                            contentDescription = "Menu",
                             modifier = Modifier.width(32.dp)
                         )
                     }
@@ -142,7 +133,7 @@ fun RunTestsScreen(
 
             // "View Results" Button directly after the cards
             ElevatedButton(
-                onClick = onClickResultsPage,
+                onClick = { onClickResultsPage(patientId) },
                 modifier = Modifier
                     .width(300.dp)
                     .height(80.dp),

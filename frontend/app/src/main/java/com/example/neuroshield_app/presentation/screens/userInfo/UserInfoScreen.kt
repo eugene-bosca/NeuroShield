@@ -61,7 +61,7 @@ import com.example.neuroshield_app.R
 @Composable
 fun UserInfoScreen(
     onClickHomePage: () -> Unit,
-    onClickEyeAlignment: () -> Unit,
+    onClickEyeAlignment: (patientId: String) -> Unit,
     viewModel: UserInfoViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -77,12 +77,13 @@ fun UserInfoScreen(
     val coachNameError by viewModel.coachNameError.collectAsState()
 
     val isRequestSuccessful by viewModel.isRequestSuccessful.collectAsState()
+    val patientId by viewModel.patientId.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(isRequestSuccessful) {
         isRequestSuccessful?.let { success ->
             if (success) {
-                onClickEyeAlignment() // Navigate only if successful
+                onClickEyeAlignment(patientId?: "") // Navigate only if successful
             } else {
                 Toast.makeText(context, "Error creating user. Please try again.", Toast.LENGTH_SHORT).show()
             }
@@ -99,15 +100,6 @@ fun UserInfoScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFF84BBD3),
                             contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            tint = Color(0xFF84BBD3),
-                            contentDescription = "Menu"
                         )
                     }
                 }

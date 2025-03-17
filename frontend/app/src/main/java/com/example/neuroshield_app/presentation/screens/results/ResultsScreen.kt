@@ -27,12 +27,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -41,7 +41,6 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -89,6 +88,27 @@ fun ResultsScreen(
         resultsViewModel.fetchUser(patientId)
     }
 
+    val hasOutOfRange =
+        (spDetails?.let {
+            listOf(
+                it.phase_lag !in 0.1..0.3,
+                it.mean_squared_error !in 0.0..0.5,
+                it.pearson_coefficient !in 0.8..1.0
+            ).any { flag -> flag }
+        } ?: false) ||
+                (plrDetails?.let {
+                    listOf(
+                        it.max_pupil_diam !in 4.0..6.0,
+                        it.min_pupil_diam !in 2.0..3.5,
+                        it.percent_contstriction !in 30.0..60.0,
+                        it.peak_constriction_velocity !in 3.0..5.0,
+                        it.average_constriction_velocity !in 2.0..4.0,
+                        it.peak_dilation_velocity !in 2.0..4.0,
+                        it.average_dilation_velocity !in 1.5..3.0,
+                        it.time_to_redilation !in 0.5..1.5
+                    ).any { flag -> flag }
+                } ?: false)
+
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
@@ -123,28 +143,54 @@ fun ResultsScreen(
                         .padding(innerPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    // Top image and warning box
-                    Icon(
-                        painter = painterResource(id = R.drawable.error_24px),
-                        tint = Color(0xFFFAAD14),
-                        contentDescription = "Error",
-                        modifier = Modifier
-                            .size(250.dp)
-                            .padding(bottom = 8.dp)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFFFFF5D1), shape = RoundedCornerShape(20.dp))
-                            .border(1.dp, Color(0xFFFAAD14), shape = RoundedCornerShape(20.dp))
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Medical Attention Recommended",
-                            color = Color(0xFFFFA500),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
+                    if (hasOutOfRange) {
+                        // Display warning icon and message.
+                        Icon(
+                            painter = painterResource(id = R.drawable.error_24px),
+                            tint = Color(0xFFFAAD14),
+                            contentDescription = "Error",
+                            modifier = Modifier
+                                .size(250.dp)
+                                .padding(bottom = 8.dp)
                         )
+
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFFFF5D1), shape = RoundedCornerShape(20.dp))
+                                .border(1.dp, Color(0xFFFAAD14), shape = RoundedCornerShape(20.dp))
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Medical Attention Recommended",
+                                color = Color(0xFFFFA500),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    } else {
+                        // Display green check mark and cleared message.
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            tint = Color.Green,
+                            contentDescription = "Cleared",
+                            modifier = Modifier
+                                .size(250.dp)
+                                .padding(bottom = 8.dp)
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFE8FFEB), shape = RoundedCornerShape(20.dp))
+                                .border(1.dp, Color.Green, shape = RoundedCornerShape(20.dp))
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Cleared",
+                                color = Color.Green,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(75.dp))

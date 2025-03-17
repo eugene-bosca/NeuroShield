@@ -43,6 +43,9 @@ class UserInfoViewModel @Inject constructor(
     private val _isRequestSuccessful = MutableStateFlow<Boolean?>(null)
     val isRequestSuccessful: StateFlow<Boolean?> = _isRequestSuccessful
 
+    private val _patientId = MutableStateFlow<String?>(null)
+    val patientId: StateFlow<String?> = _patientId
+
     // Error messages
     private val _firstNameError = MutableStateFlow<String?>(null)
     val firstNameError: StateFlow<String?> = _firstNameError
@@ -152,6 +155,7 @@ class UserInfoViewModel @Inject constructor(
                 val response = userDataSource.createUsers(user)
                 Log.d("UserInfoViewModel", "User created: $response")
                 _isRequestSuccessful.value = true
+                _patientId.value = response.patient_id
             } catch (e: Exception) {
                 Log.e("UserInfoViewModel", "Error creating user: ${e.localizedMessage}")
                 _isRequestSuccessful.value = false

@@ -30,7 +30,7 @@ class UserDataSource @Inject constructor(
         return userResponse
     }
 
-    suspend fun createUsers(user: CreateUser): String {
+    suspend fun createUsers(user: CreateUser): User {
 
         Log.d(TAG, "create User for $user")
 

@@ -40,8 +40,9 @@ import com.example.neuroshield_app.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EyeAlignmentScreen(
+    patientId: String,
     onClickUserInfoPage: () -> Unit,
-    onClickRunTestsPage: () -> Unit
+    onClickRunTestsPage: (patientId: String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -53,15 +54,6 @@ fun EyeAlignmentScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFF84BBD3),
                             contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            tint = Color(0xFF84BBD3),
-                            contentDescription = "Menu"
                         )
                     }
                 }
@@ -88,7 +80,7 @@ fun EyeAlignmentScreen(
             Spacer(modifier = Modifier.height(100.dp))
 
             ElevatedButton(
-                onClick = onClickRunTestsPage,
+                onClick = { onClickRunTestsPage(patientId) },
                 modifier = Modifier.fillMaxWidth(0.90f)
                     .padding(bottom = 20.dp)
                     .height(60.dp),

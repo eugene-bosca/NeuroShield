@@ -49,15 +49,6 @@ fun HistoryPageScreen(
                             contentDescription = "Back"
                         )
                     }
-                },
-                actions = {
-                    IconButton(onClick = { /* Open menu */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            tint = Color(0xFF84BBD3),
-                            contentDescription = "Menu"
-                        )
-                    }
                 }
             )
         }
@@ -130,13 +121,12 @@ fun HistoryPageScreen(
                                         )
                                         Text(
                                             text = "Date of Hit: ${user.date_of_hit}",
-                                            color = if (user.team_name.contains("Warriors", ignoreCase = true)) Color.Red else Color(0xFF4CAF50),
                                             style = MaterialTheme.typography.bodyMedium,
                                             modifier = Modifier
                                                 .border(
                                                     width = 1.dp,
-                                                    color = if (user.team_name.contains("Warriors", ignoreCase = true)) Color.Red else Color(0xFF4CAF50),
-                                                    shape = RoundedCornerShape(20.dp)
+                                                    shape = RoundedCornerShape(20.dp),
+                                                    color = Color.Black
                                                 )
                                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                                         )
@@ -148,14 +138,6 @@ fun HistoryPageScreen(
                                         contentDescription = null,
                                         modifier = Modifier.size(40.dp)
                                     )
-                                },
-                                trailingContent = {
-                                    TextButton(onClick = { /* Handle edit */ }) {
-                                        Text(
-                                            text = "Edit",
-                                            color = Color(0xFF84BBD3)
-                                        )
-                                    }
                                 }
                             )
                             HorizontalDivider()

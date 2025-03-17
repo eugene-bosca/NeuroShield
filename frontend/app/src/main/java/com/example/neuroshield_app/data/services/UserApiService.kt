@@ -22,7 +22,7 @@ class UserApiService @Inject constructor() {
     private val client = OkHttpClient()
     private val gson = Gson()
 
-    suspend fun createUser(userCreation: CreateUser): String =
+    suspend fun createUser(userCreation: CreateUser): User =
         withContext(Dispatchers.IO) {
             val endpoint = "users/"
             val url = Api.url(endpoint)
@@ -46,7 +46,10 @@ class UserApiService @Inject constructor() {
                 val body = response.body?.string()
                     ?: throw HttpException(response.code, "Empty response body")
 
-                return@withContext body
+                val resultType = object : TypeToken<User>() {}.type
+                val result: User = gson.fromJson(body, resultType)
+
+                return@withContext result
             }
         }
 
