@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neuroshield_app.data.models.User
+import com.example.neuroshield_app.data.models.UserDetails
 import com.example.neuroshield_app.data.source.UserDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,8 +18,8 @@ import javax.inject.Inject
 class ResultsViewModel @Inject constructor (
     private val userDataSource: UserDataSource
 ) : ViewModel() {
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user
+    private val _userDetails = MutableStateFlow<UserDetails?>(null)
+    val userDetails: StateFlow<UserDetails?> = _userDetails
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -33,9 +34,9 @@ class ResultsViewModel @Inject constructor (
                 Log.d("History", "Fetching User: $patientId")
                 // Execute the network call on the IO dispatcher
                 val userItems = withContext(Dispatchers.IO) {
-                    userDataSource.getUser(patientId)
+                    userDataSource.getUserDetails(patientId)
                 }
-                _user.value = userItems
+                _userDetails.value = userItems
                 _errorMessage.value = null
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "An unknown error occurred"

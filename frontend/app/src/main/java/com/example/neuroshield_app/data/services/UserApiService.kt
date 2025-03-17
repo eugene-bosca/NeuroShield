@@ -3,6 +3,7 @@ package com.example.neuroshield_app.data.services
 import android.util.Log
 import com.example.neuroshield_app.data.models.CreateUser
 import com.example.neuroshield_app.data.models.User
+import com.example.neuroshield_app.data.models.UserDetails
 import com.example.neuroshield_app.data.utils.Api
 import com.example.neuroshield_app.data.utils.HttpException
 import com.google.gson.Gson
@@ -73,8 +74,8 @@ class UserApiService @Inject constructor() {
         }
     }
 
-    suspend fun getUser(patientId: String): User = withContext(Dispatchers.IO) {
-        val endpoint = "users/$patientId/"
+    suspend fun getUserDetails(patientId: String): UserDetails = withContext(Dispatchers.IO) {
+        val endpoint = "users/$patientId/details/"
         val url = Api.url(endpoint)
 
         Log.d(TAG, "GET: $url")
@@ -90,8 +91,10 @@ class UserApiService @Inject constructor() {
             val body = response.body?.string()
                 ?: throw HttpException(response.code, "Empty response body")
 
-            val resultType = object : TypeToken<User>() {}.type
-            val result: User = gson.fromJson(body, resultType)
+            val resultType = object : TypeToken<UserDetails>() {}.type
+            val result: UserDetails = gson.fromJson(body, resultType)
+
+            Log.d(TAG, "result: $result")
 
             return@withContext result
         }

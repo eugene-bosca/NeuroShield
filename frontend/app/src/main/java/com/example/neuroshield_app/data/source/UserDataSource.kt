@@ -3,6 +3,7 @@ package com.example.neuroshield_app.data.source
 import android.util.Log
 import com.example.neuroshield_app.data.models.CreateUser
 import com.example.neuroshield_app.data.models.User
+import com.example.neuroshield_app.data.models.UserDetails
 import com.example.neuroshield_app.data.services.UserApiService
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -23,9 +24,9 @@ class UserDataSource @Inject constructor(
         return userResponse
     }
 
-    suspend fun getUser(patientId: String): User {
+    suspend fun getUserDetails(patientId: String): UserDetails {
         Log.d(TAG, "getUser for $patientId")
-        val userResponse = userApi.getUser(patientId)
+        val userResponse = userApi.getUserDetails(patientId)
         return userResponse
     }
 

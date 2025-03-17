@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -59,6 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.neuroshield_app.R
+import com.example.neuroshield_app.data.models.Plr
+import com.example.neuroshield_app.data.models.SmoothPursuit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,12 +73,15 @@ fun ResultsScreen(
     resultsViewModel: ResultsViewModel = hiltViewModel()
 ) {
 
-    val user by resultsViewModel.user.collectAsState()
+    val userDetails by resultsViewModel.userDetails.collectAsState()
     val isLoading by resultsViewModel.isLoading.collectAsState()
     val errorMessage by resultsViewModel.errorMessage.collectAsState()
 
+    val user = userDetails?.user
+    val plrDetails = userDetails?.plr
+    val spDetails = userDetails?.smooth_pursuit
+
     var selectedTab by remember { mutableIntStateOf(0) }
-    // This state controls whether the right-side drawer is visible
     var showDrawer by remember { mutableStateOf(false) }
     val tabTitles = listOf("Smooth Pursuit", "Pupil Light Reflex")
 
@@ -98,7 +106,6 @@ fun ResultsScreen(
                         }
                     },
                     actions = {
-                        // Toggle the drawer visibility when the menu icon is tapped
                         IconButton(onClick = { showDrawer = true }) {
                             Icon(
                                 imageVector = Icons.Filled.Menu,
@@ -116,6 +123,7 @@ fun ResultsScreen(
                         .padding(innerPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    // Top image and warning box
                     Icon(
                         painter = painterResource(id = R.drawable.error_24px),
                         tint = Color(0xFFFAAD14),
@@ -141,10 +149,11 @@ fun ResultsScreen(
 
                     Spacer(modifier = Modifier.height(75.dp))
 
+                    // Tab row for switching between tests
                     TabRow(
                         selectedTabIndex = selectedTab,
                         modifier = Modifier
-                            .fillMaxWidth(0.75f)
+                            .fillMaxWidth(0.80f)
                             .background(Color(0xFFEAF5FF), shape = RoundedCornerShape(20.dp)),
                         indicator = { tabPositions ->
                             SecondaryIndicator(
@@ -172,35 +181,41 @@ fun ResultsScreen(
 
                     Spacer(modifier = Modifier.height(50.dp))
 
-                    when (selectedTab) {
-                        0 -> Text(
-                            "Smooth Pursuit details go here.",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-
-                        1 -> Text(
-                            "Pupil Light Reflex details go here.",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal
-                        )
+                    // Display the test details in a scrollable grid
+                    Box(modifier = Modifier.fillMaxWidth(0.8f)) {
+                        when (selectedTab) {
+                            0 -> {
+                                if (spDetails != null) {
+                                    SmoothPursuitDetails(smoothPursuit = spDetails)
+                                } else {
+                                    Text("Smooth Pursuit details not available")
+                                }
+                            }
+                            1 -> {
+                                if (plrDetails != null) {
+                                    PlrDetails(plr = plrDetails)
+                                } else {
+                                    Text("Pupil Light Reflex details not available")
+                                }
+                            }
+                        }
                     }
                 }
             }
         )
-        // Right-side drawer overlay
+        // Right-side drawer overlay (unchanged)
         if (showDrawer) {
-            Box(modifier = Modifier.fillMaxSize()
-                .padding(top = 25.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 25.dp)
             ) {
-                // Semi-transparent overlay to dismiss the drawer on tap.
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.5f))
                         .clickable { showDrawer = false }
                 )
-                // Animated drawer sliding in from the right.
                 AnimatedVisibility(
                     visible = showDrawer,
                     enter = slideInHorizontally(
@@ -226,7 +241,6 @@ fun ResultsScreen(
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // Header with title and close button.
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -245,7 +259,6 @@ fun ResultsScreen(
                                 }
                             }
                             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
-                            // Patient icon.
                             Icon(
                                 imageVector = Icons.Filled.Person,
                                 contentDescription = "Patient",
@@ -308,11 +321,123 @@ fun ResultsScreen(
         }
     }
 }
+
 @Composable
 fun PatientInfoRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = "$label:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = value, fontSize = 16.sp)
+    }
+}
+
+// A helper data class for our grid items.
+data class DataPoint(
+    val label: String,
+    val value: Double,
+    val min: Double,
+    val max: Double
+) {
+    val normalRangeText: String
+        get() = "$min - $max"
+}
+
+// Helper function to choose text color based on whether the value is within range.
+fun getDisplayColor(value: Double, min: Double, max: Double): Color {
+    return if (value in min..max) Color.Green else Color(0xFFFFA500) // Yellow (using a hex value)
+}
+
+// Composable to display Smooth Pursuit details in a 2-column scrollable grid.
+@Composable
+fun SmoothPursuitDetails(smoothPursuit: SmoothPursuit) {
+    // Define dummy normal ranges; adjust these as needed.
+    val dataPoints = listOf(
+        DataPoint("Phase Lag", smoothPursuit.phase_lag, 0.1, 0.3),
+        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error, 0.0, 0.5),
+        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient, 0.8, 1.0)
+    )
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(dataPoints) { data ->
+            Card(
+                modifier = Modifier,
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    Text(text = data.label, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = data.value.toString(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = getDisplayColor(data.value, data.min, data.max)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = "Normal: ${data.normalRangeText}", fontSize = 14.sp)
+                }
+            }
+        }
+    }
+}
+
+// Composable to display Pupil Light Reflex details in a 2-column scrollable grid.
+@Composable
+fun PlrDetails(plr: Plr) {
+    // Define dummy normal ranges; adjust these as needed.
+    val dataPoints = listOf(
+        DataPoint("Max Pupil Diam", plr.max_pupil_diam, 4.0, 6.0),
+        DataPoint("Min Pupil Diam", plr.min_pupil_diam, 2.0, 3.5),
+        DataPoint("Percent Constriction", plr.percent_contstriction, 30.0, 60.0),
+        DataPoint("Peak Constriction Velocity", plr.peak_constriction_velocity, 3.0, 5.0),
+        DataPoint("Average Constriction Velocity", plr.average_constriction_velocity, 2.0, 4.0),
+        DataPoint("Peak Dilation Velocity", plr.peak_dilation_velocity, 2.0, 4.0),
+        DataPoint("Average Dilation Velocity", plr.average_dilation_velocity, 1.5, 3.0),
+        DataPoint("Time to Redilation", plr.time_to_redilation, 0.5, 1.5)
+    )
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(dataPoints) { data ->
+            Card(
+                modifier = Modifier,
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    Text(text = data.label, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = data.value.toString(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = getDisplayColor(data.value, data.min, data.max)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = "Normal: ${data.normalRangeText}", fontSize = 14.sp)
+                }
+            }
+        }
     }
 }
