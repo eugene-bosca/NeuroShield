@@ -156,7 +156,7 @@ fun CameraAlignmentStream() {
                     settings.useWideViewPort = true
                     webChromeClient = WebChromeClient()
                     webViewClient = WebViewClient()
-                    loadUrl("http://192.168.0.105:5000/camera_alignment")
+                    loadUrl("https://972f-2605-8d80-6c31-54f8-181-84b5-b625-61a6.ngrok-free.app/camera_alignment")
                 }
             }
         )

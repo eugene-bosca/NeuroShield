@@ -28,7 +28,7 @@ import com.example.neuroshield_app.R
 
 
 @Composable
-fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit, onClickRunTests: () -> Unit) {
+fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit, onClickRunTestsPage: (patientId: String) -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Image(
             painter = painterResource(id = R.drawable.neuroshield_wide),
@@ -72,7 +72,7 @@ fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit, onCl
                         fontSize = 20.sp
                     )
                 }
-                ElevatedButton(onClick = onClickHistory,
+                ElevatedButton(onClick = { onClickRunTestsPage("1019656d-b0bc-4a62-8372-8bad580fa7b2")},
                         modifier = Modifier
                         .width(200.dp)
                         .height(60.dp),

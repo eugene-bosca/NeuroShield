@@ -32,7 +32,6 @@ data class CreateUser (
 
 @Serializable
 data class Plr(
-    val id: Int = 0,
     val max_pupil_diam: Double = 0.0,
     val min_pupil_diam: Double = 0.0,
     val percent_contstriction: Double = 0.0,
@@ -47,7 +46,6 @@ data class Plr(
 
 @Serializable
 data class SmoothPursuit(
-    val id: Int = 0,
     val phase_lag: Double = 0.0,
     val mean_squared_error: Double = 0.0,
     val pearson_coefficient: Double = 0.0,

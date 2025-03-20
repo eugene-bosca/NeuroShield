@@ -2,9 +2,12 @@ package com.example.neuroshield_app.data.services
 
 import android.util.Log
 import com.example.neuroshield_app.data.models.CreateUser
+import com.example.neuroshield_app.data.models.Plr
+import com.example.neuroshield_app.data.models.SmoothPursuit
 import com.example.neuroshield_app.data.models.User
 import com.example.neuroshield_app.data.models.UserDetails
 import com.example.neuroshield_app.data.utils.Api
+import com.example.neuroshield_app.data.utils.PiApi
 import com.example.neuroshield_app.data.utils.HttpException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -102,4 +105,114 @@ class UserApiService @Inject constructor() {
             return@withContext result
         }
     }
+
+    suspend fun getPlr(): Plr = withContext(Dispatchers.IO) {
+        val endpoint = "plrs"
+        val url = PiApi.url(endpoint)
+
+        Log.d(TAG, "GET: $url")
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            PiApi.handleResponseStatus(response)
+
+            val body = response.body?.string()
+                ?: throw HttpException(response.code, "Empty response body")
+
+            val resultType = object : TypeToken<Plr>() {}.type
+            val result: Plr = gson.fromJson(body, resultType)
+
+            return@withContext result
+        }
+    }
+
+    suspend fun getSmoothPursuit(): SmoothPursuit = withContext(Dispatchers.IO) {
+        val endpoint = "smoothpursuit"
+        val url = PiApi.url(endpoint)
+
+        Log.d(TAG, "GET: $url")
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            PiApi.handleResponseStatus(response)
+
+            val body = response.body?.string()
+                ?: throw HttpException(response.code, "Empty response body")
+
+            val resultType = object : TypeToken<SmoothPursuit>() {}.type
+            val result: SmoothPursuit = gson.fromJson(body, resultType)
+
+            return@withContext result
+        }
+    }
+
+    suspend fun createPlrRecord(plrRecord: Plr, patientId: String): String =
+        withContext(Dispatchers.IO) {
+            val endpoint = "users/$patientId/plrs/"
+            val url = Api.url(endpoint)
+
+            Log.d(TAG, "POST: $url")
+
+            val requestBody = gson.toJson(plrRecord)
+                .toRequestBody("application/json".toMediaType())
+
+            Log.d(TAG, "POST: $requestBody")
+
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                Api.handleResponseStatus(response)
+
+                val body = response.body?.string()
+                    ?: throw HttpException(response.code, "Empty response body")
+
+                val resultType = object : TypeToken<String>() {}.type
+                val result: String = gson.fromJson(body, resultType)
+
+                return@withContext result
+            }
+        }
+
+    suspend fun createSpRecord(spRecord: SmoothPursuit, patientId: String): String =
+        withContext(Dispatchers.IO) {
+            val endpoint = "users/$patientId/smoothpursuits/"
+            val url = Api.url(endpoint)
+
+            Log.d(TAG, "POST: $url")
+
+            val requestBody = gson.toJson(spRecord)
+                .toRequestBody("application/json".toMediaType())
+
+            Log.d(TAG, "POST: $requestBody")
+
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                Api.handleResponseStatus(response)
+
+                val body = response.body?.string()
+                    ?: throw HttpException(response.code, "Empty response body")
+
+                val resultType = object : TypeToken<String>() {}.type
+                val result: String = gson.fromJson(body, resultType)
+
+                return@withContext result
+            }
+        }
 }

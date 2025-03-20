@@ -23,10 +23,13 @@ const val ResultsPage = "results/{patientId}"
 fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomePage) {
         composable(HomePage) {
+            val patientId = "1019656d-b0bc-4a62-8372-8bad580fa7b2"
             HomePageScreen(
                 onClickHistory = { navController.navigate(HistoryPage) },
                 onClickUserInfo = { navController.navigate(UserInfoPage) },
-                onClickRunTests = { /* Not used in this flow */ }
+                onClickRunTestsPage = {
+                    navController.navigate("runtests/$patientId")
+                }
             )
         }
         composable(HistoryPage) {

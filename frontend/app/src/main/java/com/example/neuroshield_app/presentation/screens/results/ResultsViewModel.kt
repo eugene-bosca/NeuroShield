@@ -3,7 +3,6 @@ package com.example.neuroshield_app.presentation.screens.results
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neuroshield_app.data.models.User
 import com.example.neuroshield_app.data.models.UserDetails
 import com.example.neuroshield_app.data.source.UserDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
