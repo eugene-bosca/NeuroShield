@@ -20,51 +20,46 @@ class RunTestsViewModel @Inject constructor(
         SMOOTH_PURSUIT
     }
 
-    // LiveData to track loading state for showing/hiding the loading bar
+    // Global error and navigation loading (if needed)
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    // LiveData to hold the PLR and Smooth Pursuit results
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
+
+    // LiveData for the results
     private val _plrResult = MutableLiveData<Plr?>()
     val plrResult: LiveData<Plr?> get() = _plrResult
 
     private val _smoothPursuitResult = MutableLiveData<SmoothPursuit?>()
     val smoothPursuitResult: LiveData<SmoothPursuit?> get() = _smoothPursuitResult
 
-    // LiveData for any error messages
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> get() = _error
+    // Separate loading states for each test
+    private val _plrLoading = MutableLiveData(false)
+    val plrLoading: LiveData<Boolean> get() = _plrLoading
 
-    // Keeps track of the currently selected test
+    private val _smoothPursuitLoading = MutableLiveData(false)
+    val smoothPursuitLoading: LiveData<Boolean> get() = _smoothPursuitLoading
+
+    // Keeps track of the currently selected test if needed (optional)
     private var selectedTest: TestType? = null
 
-    /**
-     * Called when the user clicks the button to run the PLR test.
-     * Sets the selected test type and starts fetching the PLR record.
-     */
     fun onPlrButtonClicked() {
         selectedTest = TestType.PLR
+        _plrLoading.value = true
         fetchPlr()
     }
 
-    /**
-     * Called when the user clicks the button to run the Smooth Pursuit test.
-     * Sets the selected test type and starts fetching the Smooth Pursuit record.
-     */
     fun onSmoothPursuitButtonClicked() {
         selectedTest = TestType.SMOOTH_PURSUIT
+        _smoothPursuitLoading.value = true
         fetchSmoothPursuit()
     }
 
-    /**
-     * Fetches the PLR data from the API.
-     * Uses a generous timeout (10 minutes) to allow for long-running requests.
-     */
     private fun fetchPlr() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                // Set a timeout of 10 minutes (600,000 milliseconds)
+                // Timeout of 10 minutes
                 val plrData = withTimeout(600_000L) {
                     userDataSource.getPlr()
                 }
@@ -74,18 +69,13 @@ class RunTestsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _error.value = "Error fetching PLR data: ${e.localizedMessage}"
             } finally {
-                _isLoading.value = false
+                _plrLoading.value = false
             }
         }
     }
 
-    /**
-     * Fetches the Smooth Pursuit data from the API.
-     * Uses a generous timeout (10 minutes) to allow for long-running requests.
-     */
     private fun fetchSmoothPursuit() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 val spData = withTimeout(600_000L) {
                     userDataSource.getSmoothPursuit()
@@ -96,15 +86,11 @@ class RunTestsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _error.value = "Error fetching Smooth Pursuit data: ${e.localizedMessage}"
             } finally {
-                _isLoading.value = false
+                _smoothPursuitLoading.value = false
             }
         }
     }
 
-    /**
-     * Called when the user presses "navigate to results".
-     * Depending on which test was selected, the corresponding record is added to the database.
-     */
     fun onNavigateToResults(patientId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -136,5 +122,3 @@ class RunTestsViewModel @Inject constructor(
         }
     }
 }
-
-

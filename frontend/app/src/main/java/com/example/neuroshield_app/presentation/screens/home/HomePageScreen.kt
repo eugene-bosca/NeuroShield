@@ -72,7 +72,7 @@ fun HomePageScreen(onClickHistory: () -> Unit, onClickUserInfo: () -> Unit, onCl
                         fontSize = 20.sp
                     )
                 }
-                ElevatedButton(onClick = { onClickRunTestsPage("1019656d-b0bc-4a62-8372-8bad580fa7b2")},
+                ElevatedButton(onClick = { onClickHistory()},
                         modifier = Modifier
                         .width(200.dp)
                         .height(60.dp),

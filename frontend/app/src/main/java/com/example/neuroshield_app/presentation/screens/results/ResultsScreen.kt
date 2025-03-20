@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -91,21 +93,44 @@ fun ResultsScreen(
     val hasOutOfRange =
         (spDetails?.let {
             listOf(
-                it.phase_lag !in 0.1..0.3,
-                it.mean_squared_error !in 0.0..0.5,
-                it.pearson_coefficient !in 0.8..1.0
+                // Left eye 180° test
+                it.phase_lag_l_180 !in 0.1..0.3,
+                it.mean_squared_error_l_180 !in 0.0..0.5,
+                it.pearson_coefficient_l_180 !in 0.8..1.0,
+                // Left eye 360° test
+                it.phase_lag_l_360 !in 0.1..0.3,
+                it.mean_squared_error_l_360 !in 0.0..0.5,
+                it.pearson_coefficient_l_360 !in 0.8..1.0,
+                // Right eye 180° test
+                it.phase_lag_r_180 !in 0.1..0.3,
+                it.mean_squared_error_r_180 !in 0.0..0.5,
+                it.pearson_coefficient_r_180 !in 0.8..1.0,
+                // Right eye 360° test
+                it.phase_lag_r_360 !in 0.1..0.3,
+                it.mean_squared_error_r_360 !in 0.0..0.5,
+                it.pearson_coefficient_r_360 !in 0.8..1.0
             ).any { flag -> flag }
         } ?: false) ||
                 (plrDetails?.let {
                     listOf(
-                        it.max_pupil_diam !in 4.0..6.0,
-                        it.min_pupil_diam !in 2.0..3.5,
-                        it.percent_contstriction !in 30.0..60.0,
-                        it.peak_constriction_velocity !in 3.0..5.0,
-                        it.average_constriction_velocity !in 2.0..4.0,
-                        it.peak_dilation_velocity !in 2.0..4.0,
-                        it.average_dilation_velocity !in 1.5..3.0,
-                        it.time_to_redilation !in 0.5..1.5
+                        // Left eye values
+                        it.max_pupil_diam_l !in 4.0..6.0,
+                        it.min_pupil_diam_l !in 2.0..3.5,
+                        it.percent_contstriction_l !in 30.0..60.0,
+                        it.peak_constriction_velocity_l !in 3.0..5.0,
+                        it.average_constriction_velocity_l !in 2.0..4.0,
+                        it.peak_dilation_velocity_l !in 2.0..4.0,
+                        it.average_dilation_velocity_l !in 1.5..3.0,
+                        it.time_to_redilation_l !in 0.5..1.5,
+                        // Right eye values
+                        it.max_pupil_diam_r !in 4.0..6.0,
+                        it.min_pupil_diam_r !in 2.0..3.5,
+                        it.percent_contstriction_r !in 30.0..60.0,
+                        it.peak_constriction_velocity_r !in 3.0..5.0,
+                        it.average_constriction_velocity_r !in 2.0..4.0,
+                        it.peak_dilation_velocity_r !in 2.0..4.0,
+                        it.average_dilation_velocity_r !in 1.5..3.0,
+                        it.time_to_redilation_r !in 0.5..1.5
                     ).any { flag -> flag }
                 } ?: false)
 
@@ -393,97 +418,420 @@ fun getDisplayColor(value: Double, min: Double, max: Double): Color {
     return if (value in min..max) Color.Green else Color(0xFFFFA500) // Yellow (using a hex value)
 }
 
-// Composable to display Smooth Pursuit details in a 2-column scrollable grid.
 @Composable
 fun SmoothPursuitDetails(smoothPursuit: SmoothPursuit) {
-    // Define dummy normal ranges; adjust these as needed.
-    val dataPoints = listOf(
-        DataPoint("Phase Lag", smoothPursuit.phase_lag, 0.1, 0.3),
-        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error, 0.0, 0.5),
-        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient, 0.8, 1.0)
+    // Left eye 180° data points
+    val leftDataPoints180 = listOf(
+        DataPoint("Phase Lag", smoothPursuit.phase_lag_l_180, 0.1, 0.3),
+        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error_l_180, 0.0, 0.5),
+        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient_l_180, 0.8, 1.0)
+    )
+    // Left eye 360° data points
+    val leftDataPoints360 = listOf(
+        DataPoint("Phase Lag", smoothPursuit.phase_lag_l_360, 0.1, 0.3),
+        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error_l_360, 0.0, 0.5),
+        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient_l_360, 0.8, 1.0)
+    )
+    // Right eye 180° data points
+    val rightDataPoints180 = listOf(
+        DataPoint("Phase Lag", smoothPursuit.phase_lag_r_180, 0.1, 0.3),
+        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error_r_180, 0.0, 0.5),
+        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient_r_180, 0.8, 1.0)
+    )
+    // Right eye 360° data points
+    val rightDataPoints360 = listOf(
+        DataPoint("Phase Lag", smoothPursuit.phase_lag_r_360, 0.1, 0.3),
+        DataPoint("Mean Squared Error", smoothPursuit.mean_squared_error_r_360, 0.0, 0.5),
+        DataPoint("Pearson Coefficient", smoothPursuit.pearson_coefficient_r_360, 0.8, 1.0)
     )
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(dataPoints) { data ->
-            Card(
-                modifier = Modifier,
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+        // ------------------ LEFT EYE ------------------
+        item {
+            Text(
+                text = "Left Eye",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
+        // 180° Test Title
+        item {
+            Text(
+                text = "180° Test",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+            )
+        }
+        // Left Eye 180° in 2-column rows, with leftover card fix
+        items(leftDataPoints180.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    Text(text = data.label, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = data.value.toString(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = getDisplayColor(data.value, data.min, data.max)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "Normal: ${data.normalRangeText}", fontSize = 14.sp)
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+                // If there's only one item in this row, add an empty box to preserve 2-column layout
+                if (rowItems.size == 1) {
+                    Box(modifier = Modifier.weight(1f))
                 }
             }
+        }
+
+        // 360° Test Title
+        item {
+            Text(
+                text = "360° Test",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+        }
+        // Left Eye 360° in 2-column rows, with leftover card fix
+        items(leftDataPoints360.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+                if (rowItems.size == 1) {
+                    Box(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+        // ------------------ DIVIDER BETWEEN EYES ------------------
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.Gray,
+                thickness = 1.dp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // ------------------ RIGHT EYE ------------------
+        item {
+            Text(
+                text = "Right Eye",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+
+        // 180° Test Title
+        item {
+            Text(
+                text = "180° Test",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+            )
+        }
+        // Right Eye 180° in 2-column rows, with leftover card fix
+        items(rightDataPoints180.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+                if (rowItems.size == 1) {
+                    Box(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+        // 360° Test Title
+        item {
+            Text(
+                text = "360° Test",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+        }
+        // Right Eye 360° in 2-column rows, with leftover card fix
+        items(rightDataPoints360.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+                if (rowItems.size == 1) {
+                    Box(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+        // SPACER AT THE BOTTOM
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-// Composable to display Pupil Light Reflex details in a 2-column scrollable grid.
 @Composable
 fun PlrDetails(plr: Plr) {
-    // Define dummy normal ranges; adjust these as needed.
-    val dataPoints = listOf(
-        DataPoint("Max Pupil Diam", plr.max_pupil_diam, 4.0, 6.0),
-        DataPoint("Min Pupil Diam", plr.min_pupil_diam, 2.0, 3.5),
-        DataPoint("Percent Constriction", plr.percent_contstriction, 30.0, 60.0),
-        DataPoint("Peak Constriction Velocity", plr.peak_constriction_velocity, 3.0, 5.0),
-        DataPoint("Average Constriction Velocity", plr.average_constriction_velocity, 2.0, 4.0),
-        DataPoint("Peak Dilation Velocity", plr.peak_dilation_velocity, 2.0, 4.0),
-        DataPoint("Average Dilation Velocity", plr.average_dilation_velocity, 1.5, 3.0),
-        DataPoint("Time to Redilation", plr.time_to_redilation, 0.5, 1.5)
+    // Define left eye data points
+    val leftDataPoints = listOf(
+        DataPoint("Max Pupil Diam", plr.max_pupil_diam_l, 4.0, 6.0),
+        DataPoint("Min Pupil Diam", plr.min_pupil_diam_l, 2.0, 3.5),
+        DataPoint("Percent Constriction", plr.percent_contstriction_l, 30.0, 60.0),
+        DataPoint("Peak Constriction Velocity", plr.peak_constriction_velocity_l, 3.0, 5.0),
+        DataPoint("Average Constriction Velocity", plr.average_constriction_velocity_l, 2.0, 4.0),
+        DataPoint("Peak Dilation Velocity", plr.peak_dilation_velocity_l, 2.0, 4.0),
+        DataPoint("Average Dilation Velocity", plr.average_dilation_velocity_l, 1.5, 3.0),
+        DataPoint("Time to Redilation", plr.time_to_redilation_l, 0.5, 1.5)
     )
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    // Define right eye data points
+    val rightDataPoints = listOf(
+        DataPoint("Max Pupil Diam", plr.max_pupil_diam_r, 4.0, 6.0),
+        DataPoint("Min Pupil Diam", plr.min_pupil_diam_r, 2.0, 3.5),
+        DataPoint("Percent Constriction", plr.percent_contstriction_r, 30.0, 60.0),
+        DataPoint("Peak Constriction Velocity", plr.peak_constriction_velocity_r, 3.0, 5.0),
+        DataPoint("Average Constriction Velocity", plr.average_constriction_velocity_r, 2.0, 4.0),
+        DataPoint("Peak Dilation Velocity", plr.peak_dilation_velocity_r, 2.0, 4.0),
+        DataPoint("Average Dilation Velocity", plr.average_dilation_velocity_r, 1.5, 3.0),
+        DataPoint("Time to Redilation", plr.time_to_redilation_r, 0.5, 1.5)
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(dataPoints) { data ->
-            Card(
-                modifier = Modifier,
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+        // Left Eye Section Header
+        item {
+            Text(
+                text = "Left Eye",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        // Left Eye data points in 2-column rows
+        items(leftDataPoints.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    Text(text = data.label, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = data.value.toString(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = getDisplayColor(data.value, data.min, data.max)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "Normal: ${data.normalRangeText}", fontSize = 14.sp)
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
                 }
             }
         }
+        // Divider between Left and Right Eye Sections
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.Gray,
+                thickness = 1.dp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        // Right Eye Section Header
+        item {
+            Text(
+                text = "Right Eye",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp)
+            )
+        }
+        // Right Eye data points in 2-column rows
+        items(rightDataPoints.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { data ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7FF))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = data.label,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = data.value.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = getDisplayColor(data.value, data.min, data.max)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Normal: ${data.normalRangeText}",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        // Spacer at the Bottom
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
+
+
+
