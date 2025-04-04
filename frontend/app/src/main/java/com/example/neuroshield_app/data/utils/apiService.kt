@@ -36,7 +36,7 @@ object Api {
 }
 
 object PiApi {
-    private const val BASE_URL = "https://9da0-2605-8d80-6c31-6492-4530-3d0e-7dae-854f.ngrok-free.app"
+    private const val BASE_URL = "https://60e2-2605-8d80-6a1-8f9b-a9a4-b0b1-63f7-4bb8.ngrok-free.app"
 
     val EMPTY_BODY = ByteArray(0).toRequestBody(null, 0, 0)
 

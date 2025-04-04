@@ -104,7 +104,7 @@ fun RunTestsScreen(
                                     .height(128.dp)
                             )
                             ElevatedButton(
-                                onClick = { runTestsViewModel.onSmoothPursuitButtonClicked() },
+                                onClick = { runTestsViewModel.onSmoothPursuitButtonClicked(patientId) },
                                 modifier = Modifier
                                     .width(300.dp)
                                     .height(80.dp),
@@ -160,7 +160,7 @@ fun RunTestsScreen(
                                     .height(128.dp)
                             )
                             ElevatedButton(
-                                onClick = { runTestsViewModel.onPlrButtonClicked() },
+                                onClick = { runTestsViewModel.onPlrButtonClicked(patientId) },
                                 modifier = Modifier
                                     .width(300.dp)
                                     .height(80.dp),
@@ -196,7 +196,6 @@ fun RunTestsScreen(
                 // "View Results" Button remains unchanged
                 ElevatedButton(
                     onClick = {
-                        runTestsViewModel.onNavigateToResults(patientId)
                         onClickResultsPage(patientId)
                     },
                     modifier = Modifier

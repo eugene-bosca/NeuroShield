@@ -1,6 +1,10 @@
 package com.example.neuroshield_app.presentation.screens.runTests
 
-import androidx.lifecycle.*
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.neuroshield_app.data.models.Plr
 import com.example.neuroshield_app.data.models.SmoothPursuit
 import com.example.neuroshield_app.data.source.UserDataSource
@@ -15,55 +19,47 @@ class RunTestsViewModel @Inject constructor(
     private val userDataSource: UserDataSource
 ) : ViewModel() {
 
-    enum class TestType {
-        PLR,
-        SMOOTH_PURSUIT
-    }
-
-    // Global error and navigation loading (if needed)
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
-    // LiveData for the results
     private val _plrResult = MutableLiveData<Plr?>()
     val plrResult: LiveData<Plr?> get() = _plrResult
 
     private val _smoothPursuitResult = MutableLiveData<SmoothPursuit?>()
     val smoothPursuitResult: LiveData<SmoothPursuit?> get() = _smoothPursuitResult
 
-    // Separate loading states for each test
     private val _plrLoading = MutableLiveData(false)
     val plrLoading: LiveData<Boolean> get() = _plrLoading
 
     private val _smoothPursuitLoading = MutableLiveData(false)
     val smoothPursuitLoading: LiveData<Boolean> get() = _smoothPursuitLoading
 
-    // Keeps track of the currently selected test if needed (optional)
-    private var selectedTest: TestType? = null
-
-    fun onPlrButtonClicked() {
-        selectedTest = TestType.PLR
+    fun onPlrButtonClicked(patientId: String) {
         _plrLoading.value = true
-        fetchPlr()
+        fetchPlr(patientId)
     }
 
-    fun onSmoothPursuitButtonClicked() {
-        selectedTest = TestType.SMOOTH_PURSUIT
+    fun onSmoothPursuitButtonClicked(patientId: String) {
         _smoothPursuitLoading.value = true
-        fetchSmoothPursuit()
+        fetchSmoothPursuit(patientId)
     }
 
-    private fun fetchPlr() {
+    private fun fetchPlr(patientId: String) {
         viewModelScope.launch {
             try {
-                // Timeout of 10 minutes
                 val plrData = withTimeout(600_000L) {
-                    userDataSource.getPlr()
+                    userDataSource.getPlr() // or whatever your data fetch call is
                 }
+                Log.d("RunTestsViewModel", "Fetched PLR data: $plrData")
                 _plrResult.value = plrData
+
+                // Immediately save PLR to the DB
+                userDataSource.createPlrRecord(plrData, patientId)
+                Log.d("RunTestsViewModel", "Saved PLR data to DB.")
+
             } catch (e: TimeoutCancellationException) {
                 _error.value = "PLR request timed out. Please try again."
             } catch (e: Exception) {
@@ -74,13 +70,19 @@ class RunTestsViewModel @Inject constructor(
         }
     }
 
-    private fun fetchSmoothPursuit() {
+    private fun fetchSmoothPursuit(patientId: String) {
         viewModelScope.launch {
             try {
                 val spData = withTimeout(600_000L) {
                     userDataSource.getSmoothPursuit()
                 }
+                Log.d("RunTestsViewModel", "Fetched SP data: $spData")
                 _smoothPursuitResult.value = spData
+
+                // Immediately save Smooth Pursuit to the DB
+                userDataSource.createSpRecord(spData, patientId)
+                Log.d("RunTestsViewModel", "Saved Smooth Pursuit data to DB.")
+
             } catch (e: TimeoutCancellationException) {
                 _error.value = "Smooth Pursuit request timed out. Please try again."
             } catch (e: Exception) {
@@ -91,31 +93,17 @@ class RunTestsViewModel @Inject constructor(
         }
     }
 
-    fun onNavigateToResults(patientId: String) {
+    fun onNavigateToResults() {
+        // No need to save data here anymore. They have already been saved
+        // in fetchPlr(...) and fetchSmoothPursuit(...).
+        // Just handle navigation or any final checks before going to the next screen.
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                when (selectedTest) {
-                    TestType.PLR -> {
-                        _plrResult.value?.let { plr ->
-                            userDataSource.createPlrRecord(plr, patientId)
-                        } ?: run {
-                            _error.value = "PLR data not available."
-                        }
-                    }
-                    TestType.SMOOTH_PURSUIT -> {
-                        _smoothPursuitResult.value?.let { sp ->
-                            userDataSource.createSpRecord(sp, patientId)
-                        } ?: run {
-                            _error.value = "Smooth Pursuit data not available."
-                        }
-                    }
-                    else -> {
-                        _error.value = "No test selected."
-                    }
-                }
+                // e.g., _navigationEvent.value = SomeNavigationCommand(...)
+                // or whatever logic you need before moving on
             } catch (e: Exception) {
-                _error.value = "Error saving record: ${e.localizedMessage}"
+                _error.value = "Error navigating: ${e.localizedMessage}"
             } finally {
                 _isLoading.value = false
             }

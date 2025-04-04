@@ -45,6 +45,7 @@ class UserDataSource @Inject constructor(
         Log.d(TAG, "Running Plr Test")
 
         val piResponse = userApi.getPlr()
+        Log.d(TAG, "PLR response: $piResponse")
         return piResponse
     }
 
@@ -53,6 +54,9 @@ class UserDataSource @Inject constructor(
         Log.d(TAG, "Running Smooth Pursuit Test")
 
         val piResponse = userApi.getSmoothPursuit()
+
+        Log.d(TAG, "Smooth Pursuit Response: $piResponse")
+
         return piResponse
     }
 
@@ -66,7 +70,7 @@ class UserDataSource @Inject constructor(
 
     suspend fun createSpRecord(spRecord: SmoothPursuit, patientId: String): String {
 
-        Log.d(TAG, "create Smooth Pursuit Record for $patientId")
+        Log.d(TAG, "create Smooth Pursuit Record for $patientId, $spRecord")
 
         val userResponse = userApi.createSpRecord(spRecord, patientId)
         return userResponse

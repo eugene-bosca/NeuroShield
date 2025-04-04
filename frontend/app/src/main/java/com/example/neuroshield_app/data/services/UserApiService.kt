@@ -18,11 +18,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "UserApiService"
 
 class UserApiService @Inject constructor() {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(5, TimeUnit.MINUTES)
+        .readTimeout(5, TimeUnit.MINUTES)
+        .writeTimeout(5, TimeUnit.MINUTES)
+        .build()
     private val gson = Gson()
 
     suspend fun createUser(userCreation: CreateUser): User =
@@ -126,6 +131,8 @@ class UserApiService @Inject constructor() {
             val resultType = object : TypeToken<Plr>() {}.type
             val result: Plr = gson.fromJson(body, resultType)
 
+            Log.d(TAG, "PLR from Pi: $result")
+
             return@withContext result
         }
     }
@@ -181,6 +188,8 @@ class UserApiService @Inject constructor() {
                 val resultType = object : TypeToken<String>() {}.type
                 val result: String = gson.fromJson(body, resultType)
 
+                Log.d(TAG, "Create Plr results: $result")
+
                 return@withContext result
             }
         }
@@ -211,6 +220,8 @@ class UserApiService @Inject constructor() {
 
                 val resultType = object : TypeToken<String>() {}.type
                 val result: String = gson.fromJson(body, resultType)
+
+                Log.d(TAG, "SP results: $result")
 
                 return@withContext result
             }

@@ -32,7 +32,6 @@ data class CreateUser (
 
 @Serializable
 data class Plr(
-    val patient_id: String = "",
     val max_pupil_diam_l: Double = 0.0,
     val min_pupil_diam_l: Double = 0.0,
     val percent_contstriction_l: Double = 0.0,
@@ -49,12 +48,10 @@ data class Plr(
     val peak_dilation_velocity_r: Double = 0.0,
     val average_dilation_velocity_r: Double = 0.0,
     val time_to_redilation_r: Double = 0.0,
-    val tested_at: String = ""
 )
 
 @Serializable
 data class SmoothPursuit(
-    val patient_id: String = "",
     val phase_lag_l_180: Double = 0.0,
     val mean_squared_error_l_180: Double = 0.0,
     val pearson_coefficient_l_180: Double = 0.0,
@@ -66,8 +63,7 @@ data class SmoothPursuit(
     val pearson_coefficient_l_360: Double = 0.0,
     val phase_lag_r_360: Double = 0.0,
     val mean_squared_error_r_360: Double = 0.0,
-    val pearson_coefficient_r_360: Double = 0.0,
-    val tested_at: String = ""
+    val pearson_coefficient_r_360: Double = 0.0
 )
 
 @Serializable
