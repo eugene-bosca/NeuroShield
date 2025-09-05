@@ -69,11 +69,19 @@ The app follows **MVVM (Model-View-ViewModel)** architecture for a clean separat
 
 ## 📸 Figures  
 
-  <img width="1600" height="1012" alt="neuroshield_ui_workflow" src="https://github.com/user-attachments/assets/a5ad0a18-f5d7-45fd-bc07-50b1e41c91ce" />
-- Figure 1: App UI workflow and architecture
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a5ad0a18-f5d7-45fd-bc07-50b1e41c91ce" 
+       alt="neuroshield_ui_workflow" 
+       width="600"/>
+</p>  
+<p align="center"><em>Figure 1: App UI workflow and architecture</em></p>  
 
-  <img width="1580" height="1600" alt="neuroshield_workflow" src="https://github.com/user-attachments/assets/bfc0622a-96e6-4c9e-bb67-5a5f7e0b9bb4" />
-- Figure 2: Backend layers (Cloud + Device)
+<p align="center" style="background-color:white; padding:10px;">
+  <img src="https://github.com/user-attachments/assets/bfc0622a-96e6-4c9e-bb67-5a5f7e0b9bb4" 
+       alt="neuroshield_workflow" 
+       width="600"/>
+</p>  
+<p align="center"><em>Figure 2: Backend layers (Cloud + Device)</em></p>  
 
 ---
 
